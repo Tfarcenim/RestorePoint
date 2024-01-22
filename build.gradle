@@ -20,6 +20,12 @@ repositories {
 }
 
 loom {
+
+	if (file("src/main/resources/${modid}.accesswidener").exists()) {
+		accessWidenerPath.set(file("src/main/resources/${modid}.accesswidener"))
+	}
+
+
     splitEnvironmentSourceSets()
 
 	mods {

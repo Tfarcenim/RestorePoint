@@ -3,7 +3,7 @@
 	"package": "com.example.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"ExampleMixin"
+		"tfar.restorepoint.mixin.ExampleMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
