@@ -20,7 +20,9 @@ public class RestorePointClient implements ClientModInitializer {
 
 	InteractionResultHolder<ItemStack> interact(Player player, Level world, InteractionHand hand) {
 		if (player.getItemInHand(hand).getItem() == Items.STICK) {
-			Minecraft.getInstance().setScreen(new ChangeTimeScreen(Component.empty()));
+			if (player.level().isClientSide) {
+				Minecraft.getInstance().setScreen(new ChangeTimeScreen(Component.empty()));
+			}
 			return InteractionResultHolder.success(player.getItemInHand(hand));
 		}
 		return InteractionResultHolder.pass(ItemStack.EMPTY);

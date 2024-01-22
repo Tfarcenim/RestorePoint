@@ -3,9 +3,10 @@
   * SPDX-License-Identifier: LGPL-2.1-only
   */
 
- package tfar.restorepoint.mixin.client;
+ package tfar.restorepoint;
 
 
+ import com.mojang.blaze3d.systems.RenderSystem;
  import net.minecraft.client.Minecraft;
  import net.minecraft.client.gui.GuiGraphics;
  import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -224,15 +225,38 @@
      private static final ResourceLocation SLIDER_LOCATION = new ResourceLocation("textures/gui/slider.png");
 
 
+     private static final ResourceLocation SLIDER_SPRITE = new ResourceLocation("widget/slider");
+     private static final ResourceLocation HIGHLIGHTED_SPRITE = new ResourceLocation("widget/slider_highlighted");
+     private static final ResourceLocation SLIDER_HANDLE_SPRITE = new ResourceLocation("widget/slider_handle");
+     private static final ResourceLocation SLIDER_HANDLE_HIGHLIGHTED_SPRITE = new ResourceLocation("widget/slider_handle_highlighted");
+
      @Override
      public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick)
      {
-         final Minecraft mc = Minecraft.getInstance();
-         blitWithBorder(guiGraphics,SLIDER_LOCATION, this.getX(), this.getY(), 0, getTextureY(), this.width, this.height, 200, 20, 2, 3, 2, 2);
+         Minecraft minecraft = Minecraft.getInstance();
+         guiGraphics.setColor(1.0f, 1.0f, 1.0f, this.alpha);
+         RenderSystem.enableBlend();
+         RenderSystem.defaultBlendFunc();
+         RenderSystem.enableDepthTest();
+         guiGraphics.blitSprite(this.getSprite(), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+         guiGraphics.blitSprite(this.getHandleSprite(), this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 8, this.getHeight());
+         guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+         int i = this.active ? 0xFFFFFF : 0xA0A0A0;
+         this.renderScrollingString(guiGraphics, minecraft.font, 2, i | Mth.ceil(this.alpha * 255.0f) << 24);
+     }
 
-         blitWithBorder(guiGraphics,SLIDER_LOCATION, this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 0, getHandleTextureY(), 8, this.height, 200, 20 , 2, 3, 2, 2);
+     private ResourceLocation getSprite() {
+         if (this.isFocused() && !this.canChangeValue) {
+             return HIGHLIGHTED_SPRITE;
+         }
+         return SLIDER_SPRITE;
+     }
 
-         renderScrollingString(guiGraphics, mc.font, 2, 0xffffff | Mth.ceil(this.alpha * 255.0F) << 24);
+     private ResourceLocation getHandleSprite() {
+         if (this.isHovered || this.canChangeValue) {
+             return SLIDER_HANDLE_HIGHLIGHTED_SPRITE;
+         }
+         return SLIDER_HANDLE_SPRITE;
      }
 
      private int getTextureY() {

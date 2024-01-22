@@ -1,10 +1,10 @@
 package tfar.restorepoint;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import tfar.restorepoint.mixin.client.FabricSlider;
 
 public class ChangeTimeScreen extends Screen {
 
@@ -24,8 +24,15 @@ public class ChangeTimeScreen extends Screen {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
 
-        addWidget(new FabricSlider(i + 38,j + 46,100,20,Component.empty(),Component.empty(),
-                0,24000,120,1,0,true));
+        long daytime = minecraft.level.getDayTime() % 24000;
+
+        addRenderableWidget(new FabricSlider(i + 38,j + 46,100,20,Component.empty(),Component.empty(),
+                0,24000,(int)daytime,1,0,true){
+            @Override
+            public void onRelease(double mouseX, double mouseY) {
+                super.onRelease(mouseX, mouseY);
+            }
+        });
     }
 
     @Override
