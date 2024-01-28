@@ -5,8 +5,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.fabricmc.fabric.impl.client.screen.ScreenExtensions;
+import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -51,6 +50,8 @@ public class RestorePointClient implements ClientModInitializer {
 
 	private void clientTick(Minecraft minecraft) {
 		Player player = minecraft.player;
+		FOVTicksLeft--;
+		inputTicksLeft--;
 		if (player != null) {
 			while (save.consumeClick()) {
 				position = player.getPosition(0);
@@ -66,7 +67,15 @@ public class RestorePointClient implements ClientModInitializer {
 		}
 	}
 
+	public static int FOVTicksLeft;
+	public static int inputTicksLeft;
+	public static double forceFOV;
+
 	void teleportPlayer() {
+		Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+		forceFOV = Minecraft.getInstance().gameRenderer.getFov(camera, 0, true);
+		FOVTicksLeft = 25;
+		inputTicksLeft = 20;
 		ClientPacketHandler.sendToServer(new C2STeleportPacket(position,pitch,yaw), PacketHandler.teleport);
 	}
 
